@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -36,7 +37,6 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-
         return pieceColor;
     }
 
@@ -65,12 +65,20 @@ public class ChessPiece {
 
             for(int dx : offsets){
                 for(int dy : offsets){
+                    int mx = myPosition.getColumn() + dx;
+                    int my = myPosition.getRow() + dy;
                     if(dx == 0 && dy == 0){continue;}
+                    if(mx > 7 | my > 7){continue;}
+                    if(board.getPiece(new ChessPosition(mx,my)) != null) {
+                        if (board.getPiece(new ChessPosition(mx,my)).getTeamColor() == piece.getTeamColor()){continue;}
+                    }
+
                     MoveList.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + dx,myPosition.getColumn() + dy), null));
 
                 }
             }
             return MoveList;
+
         }
         if (piece.getPieceType() == PieceType.KNIGHT){
             return List.of(new ChessMove(new ChessPosition(5,4) , new ChessPosition(1,8),null));
