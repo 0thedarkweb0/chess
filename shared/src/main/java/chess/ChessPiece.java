@@ -56,6 +56,8 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         List<ChessMove> MoveList = new ArrayList<>();
+        List<ChessMove> BlockedList = new ArrayList<>();
+
         if (piece.getPieceType() == PieceType.BISHOP){
             return List.of(new ChessMove(new ChessPosition(5,4) , new ChessPosition(1,8),null));
         }
@@ -84,9 +86,8 @@ public class ChessPiece {
 
                 }
             }
-            return MoveList;
-
         }
+
         if (piece.getPieceType() == PieceType.KNIGHT){
             return List.of(new ChessMove(new ChessPosition(5,4) , new ChessPosition(1,8),null));
         }
@@ -98,7 +99,7 @@ public class ChessPiece {
             return List.of(new ChessMove(new ChessPosition(5,4) , new ChessPosition(1,8),null));
         }
         if (piece.getPieceType() == PieceType.ROOK){
-            int[] offsets = {-8,-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,8};
+            int[] offsets = {1, -1, -2, 2, 3,-3, 4, -4, -5, 5, -6, 6, -7, 7, -8, 8};
 
                 for(int dx : offsets){
                     //Future Position
@@ -107,11 +108,32 @@ public class ChessPiece {
                     //Dont go off board
                     if(mx > 8 |  mx < 1){continue;}
 
-                    //Check to see if enemy piece is there
-                    if(board.getPiece(new ChessPosition(myPosition.getRow(),mx)) != null) {
-                        if (board.getPiece(new ChessPosition(myPosition.getRow(),mx)).getTeamColor() == piece.getTeamColor()){continue;}
+                    //Check to see if piece is there
+                    if(board.getPiece(new ChessPosition(myPosition.getRow(), mx)) != null) {
+                        if (board.getPiece(new ChessPosition(myPosition.getRow(),mx)).getTeamColor() == piece.getTeamColor()){
+                            if(mx < myPosition.getColumn()){
+                                for(int i = 0; i <= mx; i++){
+                                    BlockedList.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), i), null));
+                                }
+                            }else{
+                                for(int i = 8; i >= mx; i--){
+                                    BlockedList.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), i), null));
+                                }
+                            }
+                        }else{
+                            if(mx < myPosition.getColumn()){
+                                for(int i = 0; i < mx; i++){
+                                    BlockedList.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), i), null));
+                                }
+                            }else{
+                                for(int i = 8; i > mx; i--){
+                                    BlockedList.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), i), null));
+                                }
+                            }
+                        }
                     }
-                    MoveList.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(),mx), null));
+
+                    MoveList.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), mx), null));
 
                 }
                 for(int dy : offsets){
@@ -119,17 +141,46 @@ public class ChessPiece {
                     int my = myPosition.getRow() + dy;
 
                     //Dont go off board
-                    if(my> 8|  my < 1){continue;}
+                    if(my > 8|  my < 1){continue;}
 
                     //Check to see if enemy piece is there
-                    if(board.getPiece(new ChessPosition(my,myPosition.getColumn())) != null) {
-                        if (board.getPiece(new ChessPosition(my,myPosition.getColumn())).getTeamColor() == piece.getTeamColor()){continue;}
+                    if(board.getPiece(new ChessPosition(my, myPosition.getColumn())) != null) {
+                        if (board.getPiece(new ChessPosition(my,myPosition.getColumn())).getTeamColor() == piece.getTeamColor()){
+                            if(my < myPosition.getRow()){
+                                for(int i = 0; i <= my; i++){
+                                    BlockedList.add(new ChessMove(myPosition, new ChessPosition(i, myPosition.getColumn()), null));
+                                }
+                            }else{
+                                for(int i = 8; i >= my; i--){
+                                    BlockedList.add(new ChessMove(myPosition, new ChessPosition(i, myPosition.getColumn()), null));
+                                }
+                            }
+                        }else{
+                            if(my < myPosition.getRow()){
+                                for(int i = 0; i < my; i++){
+                                    BlockedList.add(new ChessMove(myPosition, new ChessPosition(i, myPosition.getColumn()), null));
+                                }
+                            }else{
+                                for(int i = 8; i > my; i--){
+                                    BlockedList.add(new ChessMove(myPosition, new ChessPosition(i, myPosition.getColumn()), null));
+                                }
+                            }
+                        }
                     }
+
                     MoveList.add(new ChessMove(myPosition, new ChessPosition(my,myPosition.getColumn()), null));
 
                 }
-            return MoveList;
         }
-        return List.of();
+        System.out.println(BlockedList);
+        System.out.println("this is move list: " + MoveList);
+
+        for(ChessMove i : BlockedList){
+            MoveList.remove(i);
+        }
+        System.out.println(BlockedList);
+        System.out.println("this is move list: " + MoveList);
+
+        return MoveList;
     }
 }
