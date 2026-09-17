@@ -59,15 +59,23 @@ public class ChessPiece {
         if (piece.getPieceType() == PieceType.BISHOP){
             return List.of(new ChessMove(new ChessPosition(5,4) , new ChessPosition(1,8),null));
         }
+
         if (piece.getPieceType() == PieceType.KING){
             int[] offsets = {1,0,-1};
 
             for(int dx : offsets){
                 for(int dy : offsets){
+                    //Future Position
                     int mx = myPosition.getColumn() + dx;
                     int my = myPosition.getRow() + dy;
+
+                    //Make sure the king isnt staying still
                     if(dx == 0 && dy == 0){continue;}
+
+                    //Dont go off board
                     if(mx > 7 | my > 7){continue;}
+
+                    //Check to see if enemy piece is there
                     if(board.getPiece(new ChessPosition(my,mx)) != null) {
                         if (board.getPiece(new ChessPosition(my,mx)).getTeamColor() == piece.getTeamColor()){continue;}
                     }
@@ -90,7 +98,27 @@ public class ChessPiece {
             return List.of(new ChessMove(new ChessPosition(5,4) , new ChessPosition(1,8),null));
         }
         if (piece.getPieceType() == PieceType.ROOK){
-            return List.of(new ChessMove(new ChessPosition(5,4) , new ChessPosition(1,8),null));
+            int[] offsets = {-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7};
+
+            for(int dx : offsets){
+                for(int dy : offsets){
+                    //Future Position
+                    int mx = myPosition.getColumn() + dx;
+                    int my = myPosition.getRow() + dy;
+
+                    //Dont go off board
+                    if(mx > 7 | my > 7 | mx < 0 | my < 0){continue;}
+
+                    //Check to see if enemy piece is there
+                    if(board.getPiece(new ChessPosition(my,mx)) != null) {
+                        if (board.getPiece(new ChessPosition(my,mx)).getTeamColor() == piece.getTeamColor()){continue;}
+                    }
+
+                    MoveList.add(new ChessMove(myPosition, new ChessPosition(my,mx), null));
+
+                }
+            }
+            return MoveList;
         }
         return List.of();
     }
