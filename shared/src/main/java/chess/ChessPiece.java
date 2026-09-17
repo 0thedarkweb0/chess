@@ -68,11 +68,11 @@ public class ChessPiece {
                     int my = myPosition.getRow() + dy;
                     if(dx == 0 && dy == 0){continue;}
                     if(mx > 7 | my > 7){continue;}
-                    if(board.getPiece(new ChessPosition(mx,my)) != null) {
-                        if (board.getPiece(new ChessPosition(mx,my)).getTeamColor() == piece.getTeamColor()){continue;}
+                    if(board.getPiece(new ChessPosition(my,mx)) != null) {
+                        if (board.getPiece(new ChessPosition(my,mx)).getTeamColor() == piece.getTeamColor()){continue;}
                     }
 
-                    MoveList.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + dx,myPosition.getColumn() + dy), null));
+                    MoveList.add(new ChessMove(myPosition, new ChessPosition(my,mx), null));
 
                 }
             }
