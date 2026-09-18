@@ -98,7 +98,7 @@ public class ChessPiece {
                 int my = myPosition.getRow() + dxdy[0];
 
                 //Dont go off board
-                if ( my < 1 || mx < 1 || my > 8 || mx > 8 ){break;}
+                if ( my < 1 || mx < 1 || my > 8 || mx > 8 ){continue;}
 
                 //Check to see if enemy piece is there
                 if(board.getPiece(new ChessPosition(my,mx)) != null) {
@@ -125,7 +125,9 @@ public class ChessPiece {
         return MoveList;
     }
 
-
+    /**
+     * Calculates the movement for pieces that have "sliding" motion.
+     * */
     private void slideMoves(ChessBoard board, ChessPosition start, List<ChessMove> moves, boolean diag, boolean straight){
         List<int[]> directions = new ArrayList<>();
         if(straight){
