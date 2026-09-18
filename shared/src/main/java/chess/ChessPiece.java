@@ -252,4 +252,25 @@ public class ChessPiece {
 
         return MoveList;
     }
+    private void slideMoves(ChessBoard board, ChessPosition start, List<ChessMove> moves, boolean diag, boolean straight){
+        List<int[]> directions = new ArrayList<>();
+        if(straight){
+            directions.add(new int[]{1,0});
+            directions.add(new int[]{-1,0});
+            directions.add(new int[]{0,1});
+            directions.add(new int[]{0,-1});
+        }
+        if(diag){
+            directions.add(new int[]{1,1});
+            directions.add(new int[]{-1,1});
+            directions.add(new int[]{1,-1});
+            directions.add(new int[]{-1,-1});
+        }
+        for(int[] dir :directions){
+            for(int mult = 1; mult <= 7; mult++){
+                break;
+            }
+
+        }
+    }
 }
