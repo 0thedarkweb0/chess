@@ -56,7 +56,6 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         List<ChessMove> MoveList = new ArrayList<>();
-        List<ChessMove> BlockedList = new ArrayList<>();
 
         if (piece.getPieceType() == PieceType.BISHOP){
             slideMoves(board, myPosition, MoveList, true, false);
@@ -98,20 +97,12 @@ public class ChessPiece {
         }
 
         if (piece.getPieceType() == PieceType.QUEEN){
-            return List.of(new ChessMove(new ChessPosition(5,4) , new ChessPosition(1,8),null));
+            slideMoves(board, myPosition, MoveList, true, true);
         }
 
         if (piece.getPieceType() == PieceType.ROOK){
             slideMoves(board, myPosition, MoveList, false, true);
         }
-        System.out.println(BlockedList);
-        System.out.println("this is move list: " + MoveList);
-
-        for(ChessMove i : BlockedList){
-            MoveList.remove(i);
-        }
-        System.out.println(BlockedList);
-        System.out.println("this is move list: " + MoveList);
 
         return MoveList;
     }
