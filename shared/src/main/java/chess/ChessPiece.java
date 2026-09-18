@@ -88,7 +88,25 @@ public class ChessPiece {
         }
 
         if (piece.getPieceType() == PieceType.KNIGHT){
-            return List.of(new ChessMove(new ChessPosition(5,4) , new ChessPosition(1,8),null));
+
+            int[][] offsets = {{ 2,  1}, { 2, -1}, {-2,  1}, {-2, -1},
+                    { 1,  2}, { 1, -2}, {-1,  2}, {-1, -2}};
+
+            for(int[] dxdy : offsets){
+                //Future Position
+                int mx = myPosition.getColumn() + dxdy[1];
+                int my = myPosition.getRow() + dxdy[0];
+
+                //Dont go off board
+                if ( my < 1 || mx < 1 || my > 8 || mx > 8 ){break;}
+
+                //Check to see if enemy piece is there
+                if(board.getPiece(new ChessPosition(my,mx)) != null) {
+                    if (board.getPiece(new ChessPosition(my,mx)).getTeamColor() == piece.getTeamColor()){continue;}
+                }
+
+                MoveList.add(new ChessMove(myPosition, new ChessPosition(my,mx), null));
+            }
         }
 
         if (piece.getPieceType() == PieceType.PAWN){
