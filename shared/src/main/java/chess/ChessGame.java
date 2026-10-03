@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -56,7 +57,22 @@ public class ChessGame {
             return null;
         }
 
-        return piece.pieceMoves(board,startPosition);
+        Collection<ChessMove> legalMoves = new ArrayList<>();
+
+        for(ChessMove move : piece.pieceMoves(board,startPosition)){
+            ChessBoard testBoard = copyBoard(board);
+
+            ChessPiece movingPiece =
+                    testBoard.getPiece(move.getStartPosition());
+
+            testBoard.addPiece(move.getStartPosition(), null);
+            testBoard.addPiece(move.getEndPosition(), movingPiece);
+
+            if (!isInCheck(piece.getTeamColor(),testBoard)) {
+                legalMoves.add(move);
+            }
+        }
+        return  legalMoves;
     }
 
     /**
