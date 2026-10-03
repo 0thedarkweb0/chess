@@ -114,6 +114,12 @@ public class ChessGame {
             throw new InvalidMoveException("Move is not legal");
         }
 
+        if (piece.getTeamColor() != teamTurn) {
+            throw new InvalidMoveException(
+                    "It is not this team's turn"
+            );
+        }
+
         ChessPiece movedPiece = piece;
 
         if (move.getPromotionPiece() != null) {
@@ -126,6 +132,14 @@ public class ChessGame {
         board.addPiece(startPosition, null);
 
         board.addPiece(move.getEndPosition(), movedPiece);
+
+        if (teamTurn == TeamColor.WHITE) {
+            teamTurn = TeamColor.BLACK;
+        } else {
+            teamTurn = TeamColor.WHITE;
+        }
+
+
     }
 
     /**
