@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -12,6 +13,20 @@ import java.util.Collection;
 public class ChessGame {
     private  ChessBoard board;
     private TeamColor teamTurn;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(board, chessGame.board) && teamTurn == chessGame.teamTurn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, teamTurn);
+    }
 
     public ChessGame() {
         board = new ChessBoard();
@@ -82,7 +97,35 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        if (move == null) {
+            throw new InvalidMoveException("Move cannot be null");
+        }
+
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPiece piece = board.getPiece(startPosition);
+
+        if (piece == null) {
+            throw new InvalidMoveException("There is no piece at the start position");
+        }
+
+        Collection<ChessMove> legalMoves = validMoves(startPosition);
+
+        if (!legalMoves.contains(move)) {
+            throw new InvalidMoveException("Move is not legal");
+        }
+
+        ChessPiece movedPiece = piece;
+
+        if (move.getPromotionPiece() != null) {
+            movedPiece = new ChessPiece(
+                    piece.getTeamColor(),
+                    move.getPromotionPiece()
+            );
+        }
+
+        board.addPiece(startPosition, null);
+
+        board.addPiece(move.getEndPosition(), movedPiece);
     }
 
     /**
