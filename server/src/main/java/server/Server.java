@@ -15,6 +15,7 @@ public class Server {
         var userDAO = new MemoryUserDAO();
         var authDAO = new MemoryAuthDAO();
         var gameDAO = new MemoryGameDAO();
+        var gameService = new GameService(authDAO, gameDAO);
 
         var userService = new UserService(userDAO, authDAO);
         var gson = new Gson();
@@ -67,6 +68,19 @@ public class Server {
             try {
                 userService.logout(ctx.header("authorization"));
                 ctx.status(200).result("{}");
+            } catch (UnauthorizedException e) {
+                ctx.status(401).result(
+                        gson.toJson(Map.of("message", "Error: unauthorized")));
+            }
+        });
+
+        javalin.get("/game", ctx -> {
+            ctx.contentType("application/json");
+
+            try {
+                ListGameResult result =
+                        gameService.listGames(ctx.header("authorization"));
+                ctx.status(200).result(gson.toJson(result));
             } catch (UnauthorizedException e) {
                 ctx.status(401).result(
                         gson.toJson(Map.of("message", "Error: unauthorized")));

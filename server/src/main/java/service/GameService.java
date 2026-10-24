@@ -8,7 +8,7 @@ import model.GameData;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameService {
+public class GameService{
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
 
