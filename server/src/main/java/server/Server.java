@@ -3,10 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import io.javalin.*;
-import service.ClearService;
-import service.RegisterRequest;
-import service.RegisterResult;
-import service.UserService;
+import service.*;
 
 import java.util.Map;
 
@@ -43,6 +40,24 @@ public class Server {
             } catch (AlreadyTakenException e) {
                 ctx.status(403).result(
                         gson.toJson(Map.of("message", "Error: already taken")));
+            }
+        });
+
+        javalin.post("/session", ctx -> {
+            ctx.contentType("application/json");
+
+            try {
+                LoginRequest request =
+                        gson.fromJson(ctx.body(), LoginRequest.class);
+                LoginResult result = userService.login(request);
+
+                ctx.status(200).result(gson.toJson(result));
+            } catch (BadRequestException e) {
+                ctx.status(400).result(
+                        gson.toJson(Map.of("message", "Error: bad request")));
+            } catch (UnauthorizedException e) {
+                ctx.status(401).result(
+                        gson.toJson(Map.of("message", "Error: unauthorized")));
             }
         });
 
