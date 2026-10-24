@@ -22,8 +22,7 @@ public class Server {
         javalin = Javalin.create(config ->
                 config.staticFiles.add("web"));
         javalin.delete("/db",ctx-> {
-            clearService.clear(); ctx.status(200).result("{}");
-        });
+            clearService.clear(); ctx.status(200).result("{}");});
         javalin.post("/user", ctx -> {
             ctx.contentType("application/json");
             try {
@@ -37,8 +36,7 @@ public class Server {
             } catch (AlreadyTakenException e) {
                 ctx.status(403).result(
                         gson.toJson(Map.of("message", "Error: already taken")));
-            }
-        });
+            }});
         javalin.post("/session", ctx -> {
             ctx.contentType("application/json");
             try {
@@ -52,8 +50,7 @@ public class Server {
             } catch (UnauthorizedException e) {
                 ctx.status(401).result(
                         gson.toJson(Map.of("message", "Error: unauthorized")));
-            }
-        });
+            }});
         javalin.delete("/session", ctx -> {
             ctx.contentType("application/json");
             try {
@@ -62,8 +59,7 @@ public class Server {
             } catch (UnauthorizedException e) {
                 ctx.status(401).result(
                         gson.toJson(Map.of("message", "Error: unauthorized")));
-            }
-        });
+            }});
         javalin.get("/game", ctx -> {
             ctx.contentType("application/json");
             try {
@@ -73,8 +69,7 @@ public class Server {
             } catch (UnauthorizedException e) {
                 ctx.status(401).result(
                         gson.toJson(Map.of("message", "Error: unauthorized")));
-            }
-        });
+            }});
         javalin.post("/game", ctx -> {
             ctx.contentType("application/json");
             try {
@@ -89,8 +84,7 @@ public class Server {
             } catch (UnauthorizedException e) {
                 ctx.status(401).result(
                         gson.toJson(Map.of("message", "Error: unauthorized")));
-            }
-        });
+            }});
         javalin.put("/game", ctx -> {
             ctx.contentType("application/json");
             try {
@@ -110,8 +104,7 @@ public class Server {
             } catch (DataAccessException e) {
                 ctx.status(500).result(
                         gson.toJson(Map.of("message", "Error: " + e.getMessage())));
-            }
-        });
+            }});
     }
     public int run(int desiredPort) {
         javalin.start(desiredPort);
