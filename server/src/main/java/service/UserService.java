@@ -55,4 +55,11 @@ public class UserService {
 
     }
 
+    public void logout(String authToken) throws UnauthorizedException{
+        if(authToken == null || authDAO.getAuth(authToken) == null){
+            throw new UnauthorizedException("unauthorized");
+        }
+
+        authDAO.deleteAuth(authToken);
+    }
 }

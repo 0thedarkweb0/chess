@@ -61,6 +61,18 @@ public class Server {
             }
         });
 
+        javalin.delete("/session", ctx -> {
+            ctx.contentType("application/json");
+
+            try {
+                userService.logout(ctx.header("authorization"));
+                ctx.status(200).result("{}");
+            } catch (UnauthorizedException e) {
+                ctx.status(401).result(
+                        gson.toJson(Map.of("message", "Error: unauthorized")));
+            }
+        });
+
 
     }
 
