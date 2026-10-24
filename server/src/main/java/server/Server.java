@@ -22,9 +22,12 @@ public class Server {
 
         var clearService = new ClearService(userDAO,authDAO,gameDAO);
 
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        javalin = Javalin.create(config ->
+                config.staticFiles.add("web"));
 
-        javalin.delete("/db",ctx-> {clearService.clear(); ctx.status(200).result("{}");});
+        javalin.delete("/db",ctx-> {
+            clearService.clear(); ctx.status(200).result("{}");
+        });
 
         javalin.post("/user", ctx -> {
             ctx.contentType("application/json");

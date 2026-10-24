@@ -16,14 +16,15 @@ public class UserService {
     }
 
     public RegisterResult register(RegisterRequest request) throws AlreadyTakenException, BadRequestException {
-        if(userDAO.getUser(request.username())!=null){
-            throw new AlreadyTakenException("already taken");
-        }
-
-        if (request.username() == null || request.username().isBlank()
+        if (request == null
+                || request.username() == null || request.username().isBlank()
                 || request.password() == null || request.password().isBlank()
                 || request.email() == null || request.email().isBlank()) {
             throw new BadRequestException("missing required field");
+        }
+
+        if (userDAO.getUser(request.username()) != null) {
+            throw new AlreadyTakenException("already taken");
         }
 
         userDAO.createUser(
@@ -38,8 +39,9 @@ public class UserService {
     }
 
     public LoginResult login(LoginRequest request) throws BadRequestException, UnauthorizedException{
-        if(request.username() == null || request.password() == null
-                || request.username().isBlank() || request.password().isBlank()){
+        if (request == null
+                || request.username() == null || request.password() == null
+                || request.username().isBlank() || request.password().isBlank()) {
             throw new BadRequestException("You need a username");
         }
 
