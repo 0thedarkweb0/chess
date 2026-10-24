@@ -106,6 +106,29 @@ public class Server {
             }
         });
 
+        javalin.put("/game", ctx -> {
+            ctx.contentType("application/json");
+
+            try {
+                JoinGameRequest request =
+                        gson.fromJson(ctx.body(), JoinGameRequest.class);
+                gameService.joinGame(ctx.header("authorization"), request);
+                ctx.status(200).result("{}");
+            } catch (BadRequestException e) {
+                ctx.status(400).result(
+                        gson.toJson(Map.of("message", "Error: bad request")));
+            } catch (UnauthorizedException e) {
+                ctx.status(401).result(
+                        gson.toJson(Map.of("message", "Error: unauthorized")));
+            } catch (AlreadyTakenException e) {
+                ctx.status(403).result(
+                        gson.toJson(Map.of("message", "Error: already taken")));
+            } catch (DataAccessException e) {
+                ctx.status(500).result(
+                        gson.toJson(Map.of("message", "Error: " + e.getMessage())));
+            }
+        });
+
 
     }
 
