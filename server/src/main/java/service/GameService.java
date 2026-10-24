@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.BadRequestException;
-import dataaccess.GameDAO;
-import dataaccess.UnauthorizedException;
+import dataaccess.*;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -49,5 +46,42 @@ public class GameService{
 
         int gameID = gameDAO.createGame(request.gameName());
         return new CreateGameResult(gameID);
+    }
+
+    public void joinGame(String authToken, JoinGameRequest request)
+            throws BadRequestException, AlreadyTakenException, DataAccessException {
+        var auth = authDAO.getAuth(authToken);
+        if (auth == null) {
+            throw new UnauthorizedException("unauthorized");
+        }
+
+        if (request == null
+                || (!"WHITE".equals(request.playerColor())
+                && !"BLACK".equals(request.playerColor()))) {
+            throw new BadRequestException("invalid request");
+        }
+
+        GameData game = gameDAO.getGame(request.gameID());
+        if (game == null) {
+            throw new BadRequestException("game does not exist");
+        }
+
+        String white = game.whiteUsername();
+        String black = game.blackUsername();
+
+        if ("WHITE".equals(request.playerColor())) {
+            if (white != null) {
+                throw new AlreadyTakenException("color already taken");
+            }
+            white = auth.username();
+        } else {
+            if (black != null) {
+                throw new AlreadyTakenException("color already taken");
+            }
+            black = auth.username();
+        }
+
+        gameDAO.updateGame(new GameData(
+                game.gameID(), white, black, game.gameName(), game.game()));
     }
 }
