@@ -87,6 +87,25 @@ public class Server {
             }
         });
 
+        javalin.post("/game", ctx -> {
+            ctx.contentType("application/json");
+
+            try {
+                CreateGameRequest request =
+                        gson.fromJson(ctx.body(), CreateGameRequest.class);
+                CreateGameResult result =
+                        gameService.createGame(ctx.header("authorization"), request);
+
+                ctx.status(200).result(gson.toJson(result));
+            } catch (BadRequestException e) {
+                ctx.status(400).result(
+                        gson.toJson(Map.of("message", "Error: bad request")));
+            } catch (UnauthorizedException e) {
+                ctx.status(401).result(
+                        gson.toJson(Map.of("message", "Error: unauthorized")));
+            }
+        });
+
 
     }
 

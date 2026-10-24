@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.BadRequestException;
 import dataaccess.GameDAO;
 import dataaccess.UnauthorizedException;
 import model.GameData;
@@ -33,5 +34,20 @@ public class GameService{
         }
 
         return new ListGameResult(result);
+    }
+
+    public CreateGameResult createGame(String authToken, CreateGameRequest request)
+            throws BadRequestException {
+        if (authToken == null || authDAO.getAuth(authToken) == null) {
+            throw new UnauthorizedException("unauthorized");
+        }
+
+        if (request == null || request.gameName() == null
+                || request.gameName().isBlank()) {
+            throw new BadRequestException("missing game name");
+        }
+
+        int gameID = gameDAO.createGame(request.gameName());
+        return new CreateGameResult(gameID);
     }
 }
