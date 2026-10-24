@@ -258,13 +258,23 @@ public class ChessGame {
                     Collection<ChessMove> enemyMoves =
                             target.pieceMoves(targetBoard, position);
 
-                    for (ChessMove move : enemyMoves) {
-                        if (move.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
+                    if (hasMoveToPosition(target.pieceMoves(targetBoard, position),
+                            kingPosition)) {
+                        return true;
                     }
+
                 }
 
+            }
+        }
+        return false;
+    }
+
+    private boolean hasMoveToPosition(
+            Collection<ChessMove> moves, ChessPosition destination) {
+        for (ChessMove move : moves) {
+            if (move.getEndPosition().equals(destination)) {
+                return true;
             }
         }
         return false;

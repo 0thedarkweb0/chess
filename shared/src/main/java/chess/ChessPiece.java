@@ -75,28 +75,28 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        ArrayList<ChessMove> MoveList = new ArrayList<>();
+        ArrayList<ChessMove> moveList = new ArrayList<>();
         if(type==PieceType.QUEEN){
-            slideMoves(board,MoveList,myPosition,8,true,true);
+            slideMoves(board,moveList,myPosition,8,true,true);
         }
         if(type==PieceType.ROOK){
-            slideMoves(board,MoveList,myPosition,8,false,true);
+            slideMoves(board,moveList,myPosition,8,false,true);
         }
         if(type==PieceType.BISHOP){
-            slideMoves(board,MoveList,myPosition,8,true,false);
+            slideMoves(board,moveList,myPosition,8,true,false);
         }
         if(type==PieceType.KING){
-            slideMoves(board,MoveList,myPosition,1,true,true);
+            slideMoves(board,moveList,myPosition,1,true,true);
         }
         if(type==PieceType.KNIGHT){
-            slideMoves(board,MoveList,myPosition,1,false,false);
+            slideMoves(board,moveList,myPosition,1,false,false);
         }
         if(type==PieceType.PAWN){
-            pawnMoves(board,MoveList,myPosition);
+            pawnMoves(board,moveList,myPosition);
         }
 
 
-        return MoveList;
+        return moveList;
     }
     public void slideMoves(ChessBoard board, ArrayList<ChessMove> moves, ChessPosition start, int mult, boolean diag, boolean straight){
         ArrayList<int[]> directions = new ArrayList<>();
