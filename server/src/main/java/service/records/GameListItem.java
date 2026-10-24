@@ -1,4 +1,4 @@
-package service;
+package service.records;
 
 public record GameListItem(
         int gameID,

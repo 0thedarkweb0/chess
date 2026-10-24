@@ -9,6 +9,10 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import service.records.LoginRequest;
+import service.records.LoginResult;
+import service.records.RegisterRequest;
+import service.records.RegisterResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -3,6 +3,10 @@ package service;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import service.records.LoginRequest;
+import service.records.LoginResult;
+import service.records.RegisterRequest;
+import service.records.RegisterResult;
 
 import java.util.UUID;
 
