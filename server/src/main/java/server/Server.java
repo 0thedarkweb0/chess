@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.*;
+import dataaccess.sql.MySqlDatabase;
 import io.javalin.*;
 import service.*;
 import service.records.*;
