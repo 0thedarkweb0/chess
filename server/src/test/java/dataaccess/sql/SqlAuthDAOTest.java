@@ -2,8 +2,7 @@ package dataaccess.sql;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
-import dataaccess.sql.MySqlDatabase;
-import dataaccess.sql.SqlAuthDAO;
+import dataaccess.MySqlDatabase;
 import model.AuthData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

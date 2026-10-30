@@ -1,47 +1,45 @@
 package server;
-
 import com.google.gson.Gson;
 import dataaccess.AlreadyTakenException;
 import dataaccess.BadRequestException;
 import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
-import dataaccess.sql.MySqlDatabase;
+import dataaccess.MySqlDatabase;
 import dataaccess.sql.SqlAuthDAO;
 import dataaccess.sql.SqlGameDAO;
 import dataaccess.sql.SqlUserDAO;
 import io.javalin.*;
 import service.*;
 import service.records.*;
-
 import java.util.Map;
 
 public class Server {
 
     private final Javalin javalin;
+    private final Gson gson = new Gson();
 
     public Server() {
         try {
             MySqlDatabase.initialize();
         } catch (DataAccessException e) {
-            throw new IllegalStateException("Could not initialize the database", e);
-        }
+            throw new IllegalStateException("Could not initialize the database", e);}
         var userDAO = new SqlUserDAO();
         var authDAO = new SqlAuthDAO();
         var gameDAO = new SqlGameDAO();
         var gameService = new GameService(authDAO, gameDAO);
         var userService = new UserService(userDAO, authDAO);
-        var gson = new Gson();
+
         var clearService = new ClearService(userDAO,authDAO,gameDAO);
         javalin = Javalin.create(config ->
                 config.staticFiles.add("web"));
-
-        javalin.exception(DataAccessException.class, (e, ctx) -> {
-            ctx.status(500);
-            ctx.contentType("application/json");
-            ctx.result(gson.toJson(Map.of(
-                    "message", "Error: database operation failed"
-            )));
-        });
+        javalin.exception(DataAccessException.class,
+                (e, ctx) -> sendError(ctx, 500, "Error: database operation failed"));
+        javalin.exception(BadRequestException.class,
+                (e, ctx) -> sendError(ctx, 400, "Error: bad request"));
+        javalin.exception(UnauthorizedException.class,
+                (e, ctx) -> sendError(ctx, 401, "Error: unauthorized"));
+        javalin.exception(AlreadyTakenException.class,
+                (e, ctx) -> sendError(ctx, 403, "Error: already taken"));
 
         javalin.delete("/db",ctx-> {
             clearService.clear(); ctx.status(200).result("{}");});
@@ -123,19 +121,17 @@ public class Server {
             } catch (AlreadyTakenException e) {
                 ctx.status(403).result(
                         gson.toJson(Map.of("message", "Error: already taken")));
-            } catch (DataAccessException e) {
-                ctx.status(500).result(
-                        gson.toJson(Map.of("message", "Error: " + e.getMessage())));
             }});
-
-
     }
-
     public int run(int desiredPort) {
         javalin.start(desiredPort);
-        return javalin.port();
+        return javalin.port();}
+    public void stop() {javalin.stop();}
+
+    private void sendError(io.javalin.http.Context ctx, int status, String message) {
+        ctx.status(status);
+        ctx.contentType("application/json");
+        ctx.result(gson.toJson(Map.of("message", message)));
     }
-    public void stop() {
-        javalin.stop();
-    }
+
 }

@@ -7,9 +7,9 @@ import chess.ChessPosition;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
-import dataaccess.sql.MySqlDatabase;
-import dataaccess.sql.SqlGameDAO;
+import dataaccess.MySqlDatabase;
 import model.GameData;
+import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -104,9 +104,12 @@ class SqlGameDAOTest {
 
     @Test
     void updateGamePersistsPlayersAndMove() throws Exception {
-        insertUserDirectly("alice");
-        insertUserDirectly("bob");
-        int gameID = gameDAO.createGame("before");
+        new SqlUserDAO().createUser(
+                new UserData("alice", "test-hash", "alice@example.com")
+        );
+        new SqlUserDAO().createUser(
+                new UserData("bob", "test-hash", "bob@example.com")
+        );        int gameID = gameDAO.createGame("before");
 
         var updatedGame = new ChessGame();
         updatedGame.makeMove(new ChessMove(
@@ -192,16 +195,4 @@ class SqlGameDAOTest {
         }
     }
 
-    private void insertUserDirectly(String username) throws Exception {
-        try (var connection = DatabaseManager.getConnection();
-             var statement = connection.prepareStatement("""
-                     INSERT INTO users (username, password_hash, email)
-                     VALUES (?, ?, ?)
-                     """)) {
-            statement.setString(1, username);
-            statement.setString(2, "test-hash");
-            statement.setString(3, username + "@example.com");
-            statement.executeUpdate();
-        }
-    }
 }

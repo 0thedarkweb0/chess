@@ -1,7 +1,6 @@
 package server;
 
 import dataaccess.DataAccessException;
-import dataaccess.sql.MySqlDatabase;
 
 public class ServerMain {
     public static void main(String[] args) throws DataAccessException {

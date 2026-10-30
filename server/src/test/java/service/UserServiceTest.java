@@ -10,6 +10,7 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 import service.records.LoginRequest;
 import service.records.LoginResult;
 import service.records.RegisterRequest;
@@ -37,10 +38,34 @@ class UserServiceTest {
         assertEquals("alice", result.username());
         assertNotNull(result.authToken());
         assertFalse(result.authToken().isBlank());
-        assertEquals(new UserData("alice", "password", "alice@example.com"),
-                userDAO.getUser("alice"));
-        assertEquals(new AuthData(result.authToken(), "alice"),
-                authDAO.getAuth(result.authToken()));
+
+        UserData storedUser = userDAO.getUser("alice");
+        assertNotNull(storedUser);
+        assertEquals("alice", storedUser.username());
+        assertEquals("alice@example.com", storedUser.email());
+        assertTrue(BCrypt.checkpw("password", storedUser.password()));
+
+        assertEquals(
+                new AuthData(result.authToken(), "alice"),
+                authDAO.getAuth(result.authToken())
+        );
+    }
+
+    @Test
+    void loginCreatesNewAuthTokenForValidCredentials() throws Exception {
+        String passwordHash = BCrypt.hashpw("password", BCrypt.gensalt());
+        userDAO.createUser(
+                new UserData("alice", passwordHash, "alice@example.com"));
+
+        LoginResult result = service.login(
+                new LoginRequest("alice", "password"));
+
+        assertEquals("alice", result.username());
+        assertNotNull(result.authToken());
+        assertEquals(
+                new AuthData(result.authToken(), "alice"),
+                authDAO.getAuth(result.authToken())
+        );
     }
 
     @Test
@@ -76,26 +101,16 @@ class UserServiceTest {
     }
 
     @Test
-    void loginCreatesNewAuthTokenForValidCredentials() throws Exception {
-        userDAO.createUser(new UserData("alice", "password", "alice@example.com"));
-
-        LoginResult result = service.login(new LoginRequest("alice", "password"));
-
-        assertEquals("alice", result.username());
-        assertNotNull(result.authToken());
-        assertEquals(new AuthData(result.authToken(), "alice"),
-                authDAO.getAuth(result.authToken()));
-    }
-
-    @Test
     void loginRejectsUnknownUser() {
         assertThrows(UnauthorizedException.class,
                 () -> service.login(new LoginRequest("missing", "password")));
     }
 
     @Test
-    void loginRejectsWrongPassword() {
-        userDAO.createUser(new UserData("alice", "password", "alice@example.com"));
+    void loginRejectsWrongPassword() throws Exception {
+        String passwordHash = BCrypt.hashpw("password", BCrypt.gensalt());
+        userDAO.createUser(
+                new UserData("alice", passwordHash, "alice@example.com"));
 
         assertThrows(UnauthorizedException.class,
                 () -> service.login(new LoginRequest("alice", "wrong")));
