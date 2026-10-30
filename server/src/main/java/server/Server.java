@@ -5,6 +5,7 @@ import dataaccess.AlreadyTakenException;
 import dataaccess.BadRequestException;
 import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
+import dataaccess.sql.MySqlDatabase;
 import dataaccess.sql.SqlAuthDAO;
 import dataaccess.sql.SqlGameDAO;
 import dataaccess.sql.SqlUserDAO;
@@ -19,6 +20,11 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
+        try {
+            MySqlDatabase.initialize();
+        } catch (DataAccessException e) {
+            throw new IllegalStateException("Could not initialize the database", e);
+        }
         var userDAO = new SqlUserDAO();
         var authDAO = new SqlAuthDAO();
         var gameDAO = new SqlGameDAO();
