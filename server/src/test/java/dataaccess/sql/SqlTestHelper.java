@@ -32,19 +32,4 @@ final class SqlTestHelper {
         );
     }
 
-    static int countRows(String tableName)
-            throws DataAccessException, SQLException {
-        if (!Set.of("users", "authToken", "games").contains(tableName)) {
-            throw new IllegalArgumentException("Unexpected table: " + tableName);
-        }
-
-        String sql = "SELECT COUNT(*) FROM " + tableName;
-
-        try (var connection = DatabaseManager.getConnection();
-             var statement = connection.createStatement();
-             var result = statement.executeQuery(sql)) {
-            result.next();
-            return result.getInt(1);
-        }
-    }
 }

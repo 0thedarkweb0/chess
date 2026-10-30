@@ -15,6 +15,7 @@ class SqlUserDAOTest {
     @BeforeEach
     void setUp() throws Exception {
         resetTables();
+        userDAO = new SqlUserDAO();
     }
 
     @Test

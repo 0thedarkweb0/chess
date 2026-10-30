@@ -16,6 +16,7 @@ class SqlAuthDAOTest {
     @BeforeEach
     void setUp() throws Exception {
         resetTables();
+        authDAO = new SqlAuthDAO();
     }
 
     @Test
