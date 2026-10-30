@@ -22,7 +22,7 @@ public class SqlAuthDAO implements AuthDAO {
     @Override
     public void createAuth(AuthData auth) throws DataAccessException {
         String sql = """
-                INSERT INTO users (authToken, username)
+                INSERT INTO authToken (auth_token, username)
                 VALUES (?, ?)
                 """;
 
@@ -40,9 +40,9 @@ public class SqlAuthDAO implements AuthDAO {
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
         String sql = """
-                SELECT authToken, username
-                FROM auth_tokens
-                WHERE authToken = ?
+                SELECT auth_token, username
+                FROM authToken
+                WHERE auth_token = ?
                 """;
 
         try (var connection = DatabaseManager.getConnection();
@@ -68,7 +68,7 @@ public class SqlAuthDAO implements AuthDAO {
     public void deleteAuth(String authToken) throws DataAccessException {
         try (var connection = DatabaseManager.getConnection();
              var statement = connection.prepareStatement(
-                     "DELETE FROM auth_tokens WHERE authToken = ?")) {
+                     "DELETE FROM authToken WHERE auth_token = ?")) {
             statement.setString(1, authToken);
             statement.executeUpdate();
         } catch (SQLException e) {

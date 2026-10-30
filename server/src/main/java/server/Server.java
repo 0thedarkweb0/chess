@@ -26,6 +26,15 @@ public class Server {
         var clearService = new ClearService(userDAO,authDAO,gameDAO);
         javalin = Javalin.create(config ->
                 config.staticFiles.add("web"));
+
+        javalin.exception(DataAccessException.class, (e, ctx) -> {
+            ctx.status(500);
+            ctx.contentType("application/json");
+            ctx.result(gson.toJson(Map.of(
+                    "message", "Error: database operation failed"
+            )));
+        });
+
         javalin.delete("/db",ctx-> {
             clearService.clear(); ctx.status(200).result("{}");});
         javalin.post("/user", ctx -> {
@@ -110,7 +119,10 @@ public class Server {
                 ctx.status(500).result(
                         gson.toJson(Map.of("message", "Error: " + e.getMessage())));
             }});
+
+
     }
+
     public int run(int desiredPort) {
         javalin.start(desiredPort);
         return javalin.port();
