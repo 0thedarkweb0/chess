@@ -1,6 +1,5 @@
 package server;
 
-import chess.*;
 import dataaccess.DataAccessException;
 import dataaccess.sql.MySqlDatabase;
 

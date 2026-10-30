@@ -12,7 +12,7 @@ public class SqlUserDAO implements UserDAO {
     @Override
     public void clear() throws DataAccessException {
         try (var connection = DatabaseManager.getConnection();
-            var statement = connection.prepareStatement("DELETE FROM users")){
+             var statement = connection.prepareStatement("DELETE FROM users")){
                 statement.executeUpdate();
         }catch (SQLException e){
             throw new DataAccessException("failed to clear",e);

@@ -1,8 +1,10 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.*;
-import dataaccess.sql.MySqlDatabase;
+import dataaccess.AlreadyTakenException;
+import dataaccess.BadRequestException;
+import dataaccess.DataAccessException;
+import dataaccess.UnauthorizedException;
 import dataaccess.sql.SqlAuthDAO;
 import dataaccess.sql.SqlGameDAO;
 import dataaccess.sql.SqlUserDAO;

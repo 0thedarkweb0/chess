@@ -1,6 +1,10 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.AlreadyTakenException;
+import dataaccess.BadRequestException;
+import dataaccess.DataAccessException;
+import dataaccess.UnauthorizedException;
 import model.AuthData;
 import model.UserData;
 import service.records.LoginRequest;
