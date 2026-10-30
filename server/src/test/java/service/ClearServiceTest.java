@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
@@ -25,7 +26,7 @@ class ClearServiceTest {
     }
 
     @Test
-    void clearRemovesUsersAuthTokensAndGames() {
+    void clearRemovesUsersAuthTokensAndGames() throws DataAccessException {
         userDAO.createUser(new UserData("alice", "password", "alice@example.com"));
         authDAO.createAuth(new AuthData("token", "alice"));
         int gameID = gameDAO.createGame("opening game");
