@@ -55,7 +55,7 @@ public class SqlAuthDAO implements AuthDAO {
                 }
 
                 return new AuthData(
-                        result.getString("authToken"),
+                        result.getString("auth_token"),
                         result.getString("username")
                 );
             }
