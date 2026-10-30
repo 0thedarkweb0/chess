@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import dataaccess.sql.MySqlDatabase;
 import dataaccess.sql.SqlAuthDAO;
+import dataaccess.sql.SqlGameDAO;
 import dataaccess.sql.SqlUserDAO;
 import io.javalin.*;
 import service.*;
@@ -18,7 +19,7 @@ public class Server {
     public Server() {
         var userDAO = new SqlUserDAO();
         var authDAO = new SqlAuthDAO();
-        var gameDAO = new MemoryGameDAO();
+        var gameDAO = new SqlGameDAO();
         var gameService = new GameService(authDAO, gameDAO);
         var userService = new UserService(userDAO, authDAO);
         var gson = new Gson();

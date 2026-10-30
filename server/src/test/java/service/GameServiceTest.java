@@ -19,13 +19,12 @@ class GameServiceTest {
     private static final String TOKEN = "valid-token";
     private static final String USERNAME = "alice";
 
-    private MemoryAuthDAO authDAO;
     private MemoryGameDAO gameDAO;
     private GameService service;
 
     @BeforeEach
     void setUp() {
-        authDAO = new MemoryAuthDAO();
+        MemoryAuthDAO authDAO = new MemoryAuthDAO();
         gameDAO = new MemoryGameDAO();
         authDAO.createAuth(new AuthData(TOKEN, USERNAME));
         service = new GameService(authDAO, gameDAO);
