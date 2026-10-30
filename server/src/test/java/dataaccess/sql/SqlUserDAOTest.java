@@ -2,11 +2,11 @@ package dataaccess.sql;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
-import dataaccess.MySqlDatabase;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static dataaccess.sql.SqlTestHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SqlUserDAOTest {
@@ -14,22 +14,12 @@ class SqlUserDAOTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        MySqlDatabase.initialize();
-        userDAO = new SqlUserDAO();
-
-        try (var connection = DatabaseManager.getConnection();
-             var statement = connection.createStatement()) {
-            statement.executeUpdate("DELETE FROM games");
-            statement.executeUpdate("DELETE FROM authToken");
-            statement.executeUpdate("DELETE FROM users");
-        }
+        resetTables();
     }
 
     @Test
     void createUserWritesRowToDatabase() throws Exception {
-        var user = new UserData("alice", "test-hash", "alice@example.com");
-
-        userDAO.createUser(user);
+        insertUser("alice");
 
         try (var connection = DatabaseManager.getConnection();
              var statement = connection.prepareStatement("""
@@ -74,7 +64,7 @@ class SqlUserDAOTest {
 
     @Test
     void clearDeletesRowsFromDatabase() throws Exception {
-        userDAO.createUser(new UserData("alice", "test-hash", "alice@example.com"));
+        insertUser("alice");
         userDAO.clear();
 
         try (var connection = DatabaseManager.getConnection();

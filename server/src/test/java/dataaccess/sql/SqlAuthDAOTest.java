@@ -7,6 +7,7 @@ import model.AuthData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static dataaccess.sql.SqlTestHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SqlAuthDAOTest {
@@ -14,21 +15,12 @@ class SqlAuthDAOTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        MySqlDatabase.initialize();
-        authDAO = new SqlAuthDAO();
-
-        // Clear child tables before users to respect the foreign keys.
-        try (var connection = DatabaseManager.getConnection();
-             var statement = connection.createStatement()) {
-            statement.executeUpdate("DELETE FROM games");
-            statement.executeUpdate("DELETE FROM authToken");
-            statement.executeUpdate("DELETE FROM users");
-        }
+        resetTables();
     }
 
     @Test
     void createAuthStoresRowInDatabase() throws Exception {
-        insertUserDirectly("alice");
+        insertUser("alice");
         var auth = new AuthData("token-1", "alice");
 
         authDAO.createAuth(auth);
@@ -52,7 +44,7 @@ class SqlAuthDAOTest {
 
     @Test
     void getAuthReadsExistingDatabaseRow() throws Exception {
-        insertUserDirectly("alice");
+        insertUser("alice");
         insertAuthDirectly("token-1", "alice");
 
         assertEquals(
@@ -68,7 +60,7 @@ class SqlAuthDAOTest {
 
     @Test
     void deleteAuthRemovesDatabaseRow() throws Exception {
-        insertUserDirectly("alice");
+        insertUser("alice");
         authDAO.createAuth(new AuthData("token-1", "alice"));
 
         authDAO.deleteAuth("token-1");
@@ -90,8 +82,8 @@ class SqlAuthDAOTest {
 
     @Test
     void clearDeletesAllAuthRows() throws Exception {
-        insertUserDirectly("alice");
-        insertUserDirectly("bob");
+        insertUser("alice");
+        insertUser("bob");
         authDAO.createAuth(new AuthData("token-1", "alice"));
         authDAO.createAuth(new AuthData("token-2", "bob"));
 
@@ -107,25 +99,13 @@ class SqlAuthDAOTest {
 
     @Test
     void duplicateTokenIsRejected() throws Exception {
-        insertUserDirectly("alice");
+        insertUser("alice");
         var auth = new AuthData("token-1", "alice");
         authDAO.createAuth(auth);
 
         assertThrows(DataAccessException.class, () -> authDAO.createAuth(auth));
     }
 
-    private void insertUserDirectly(String username) throws Exception {
-        try (var connection = DatabaseManager.getConnection();
-             var statement = connection.prepareStatement("""
-                     INSERT INTO users (username, password_hash, email)
-                     VALUES (?, ?, ?)
-                     """)) {
-            statement.setString(1, username);
-            statement.setString(2, "test-hash");
-            statement.setString(3, username + "@example.com");
-            statement.executeUpdate();
-        }
-    }
 
     private void insertAuthDirectly(String token, String username) throws Exception {
         try (var connection = DatabaseManager.getConnection();
