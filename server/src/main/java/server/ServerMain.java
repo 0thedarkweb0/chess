@@ -5,7 +5,6 @@ import dataaccess.sql.MySqlDatabase;
 
 public class ServerMain {
     public static void main(String[] args) throws DataAccessException {
-        MySqlDatabase.initialize();
 
         var port = 8080;
         Server server = new Server();
