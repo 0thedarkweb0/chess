@@ -16,7 +16,7 @@ public class GameService{
         this.gameDAO = gameDAO;
     }
 
-    public ListGameResult listGames(String authToken) {
+    public ListGameResult listGames(String authToken) throws DataAccessException {
         if (authToken == null || authDAO.getAuth(authToken) == null) {
             throw new UnauthorizedException("unauthorized");
         }
@@ -35,7 +35,7 @@ public class GameService{
     }
 
     public CreateGameResult createGame(String authToken, CreateGameRequest request)
-            throws BadRequestException {
+            throws BadRequestException, DataAccessException {
         if (authToken == null || authDAO.getAuth(authToken) == null) {
             throw new UnauthorizedException("unauthorized");
         }

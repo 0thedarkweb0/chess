@@ -18,7 +18,7 @@ public final class MySqlDatabase {
             """;
 
     private static final String CREATE_AUTH_TOKENS = """
-            CREATE TABLE IF NOT EXISTS auth_tokens (
+            CREATE TABLE IF NOT EXISTS authToken (
                 auth_token VARCHAR(255) NOT NULL PRIMARY KEY,
                 username VARCHAR(255) NOT NULL,
                 CONSTRAINT fk_auth_user

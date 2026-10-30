@@ -32,7 +32,7 @@ class GameServiceTest {
     }
 
     @Test
-    void listGamesReturnsEmptyListWhenNoGamesExist() {
+    void listGamesReturnsEmptyListWhenNoGamesExist() throws DataAccessException {
         ListGameResult result = service.listGames(TOKEN);
 
         assertNotNull(result.games());
@@ -40,7 +40,7 @@ class GameServiceTest {
     }
 
     @Test
-    void listGamesReturnsGameDetails() {
+    void listGamesReturnsGameDetails() throws DataAccessException {
         int gameID = gameDAO.createGame("opening");
 
         ListGameResult result = service.listGames(TOKEN);

@@ -1,10 +1,6 @@
 package service;
 
-import dataaccess.AlreadyTakenException;
-import dataaccess.BadRequestException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
-import dataaccess.UnauthorizedException;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,7 +110,7 @@ class UserServiceTest {
     }
 
     @Test
-    void logoutDeletesExistingAuthToken() {
+    void logoutDeletesExistingAuthToken() throws DataAccessException {
         authDAO.createAuth(new AuthData("token", "alice"));
 
         service.logout("token");

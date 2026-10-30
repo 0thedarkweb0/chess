@@ -3,6 +3,8 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import dataaccess.sql.MySqlDatabase;
+import dataaccess.sql.SqlAuthDAO;
+import dataaccess.sql.SqlUserDAO;
 import io.javalin.*;
 import service.*;
 import service.records.*;
@@ -14,8 +16,8 @@ public class Server {
     private final Javalin javalin;
 
     public Server() {
-        var userDAO = new MemoryUserDAO();
-        var authDAO = new MemoryAuthDAO();
+        var userDAO = new SqlUserDAO();
+        var authDAO = new SqlAuthDAO();
         var gameDAO = new MemoryGameDAO();
         var gameService = new GameService(authDAO, gameDAO);
         var userService = new UserService(userDAO, authDAO);
