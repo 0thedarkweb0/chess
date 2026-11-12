@@ -16,7 +16,6 @@ public class ClientMain {
         AuthData currentUser = null;
         boolean running = true;
         List<ServerFacade.GameInfo> games = List.of();
-
         while (running) {
             System.out.print("> ");
             String command = scanner.nextLine().trim().toLowerCase();
@@ -46,20 +45,15 @@ public class ClientMain {
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                             System.out.println("Login was interrupted.");
-                        }
-                        break;
-
+                        }break;
                     case "register":
                         System.out.print("Username: ");
                         String newUsername = scanner.nextLine();
-
                         System.out.print("Password: ");
                         String newPassword = scanner.nextLine();
-
                         System.out.print("Email: ");
                         String email = scanner.nextLine();
-
-                        try {
+                        try{
                             currentUser = facade.register(newUsername, newPassword, email);
                             System.out.println("Registration successful. Welcome, " + currentUser.username() + ".");
                         } catch (IllegalStateException e) {
@@ -69,20 +63,15 @@ public class ClientMain {
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                             System.out.println("Registration was interrupted.");
-                        }
-                        break;
-
+                        }break;
                     default:
-                        System.out.println("Unknown command. Type help to see available commands.");
-                }
+                        System.out.println("Unknown command. Type help to see available commands.");}
             }else{
                 System.out.println("Commands: help, logout, create game, list games, play game, observe, quit.");
-
                 switch (command) {
                     case "help":
                         System.out.println("Commands: help, logout, create game, list games, play game, observe, quit");
                         break;
-
                     case "logout":
                         try {
                             facade.logout(currentUser.authToken());
@@ -97,14 +86,11 @@ public class ClientMain {
                             System.out.println("Logout was interrupted.");
                         }
                         break;
-
                     case "create game":
                         System.out.print("Game Name: ");
                         String gameName = scanner.nextLine();
-
                         try{
                             facade.createGame(currentUser.authToken(), gameName);
-
                         } catch (IllegalStateException e) {
                             System.out.println(e.getMessage());
                         } catch (IOException e) {
@@ -112,9 +98,7 @@ public class ClientMain {
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                             System.out.println("Create games was interrupted.");
-                        }
-                        break;
-
+                        }break;
                     case "list games":
                         System.out.print("Games: ");
                         try{
@@ -124,12 +108,10 @@ public class ClientMain {
                            }else{
                                for (int i = 0; i < games.size(); i++) {
                                    ServerFacade.GameInfo game = games.get(i);
-
                                    String white = game.whiteUsername() == null
                                            ? "open" : game.whiteUsername();
                                    String black = game.blackUsername() == null
                                            ? "open" : game.blackUsername();
-
                                    System.out.printf(
                                            "%d. %s (White: %s, Black: %s)%n",
                                            i + 1, game.gameName(), white, black
@@ -143,8 +125,7 @@ public class ClientMain {
                         } catch (InterruptedException e){
                             Thread.currentThread().interrupt();
                             System.out.println("List games was interrupted");
-                        }
-                        break;
+                        }break;
 
                     case "play game": {
                         if (games.isEmpty()) {
@@ -188,15 +169,12 @@ public class ClientMain {
                         }catch (InterruptedException e){
                             Thread.currentThread().interrupt();
                             System.out.println("Joining the game was interrupted.");
-                        }
-                        break;
-                    }
+                        }break;}
 
                     case "observe": {
                         if(games.isEmpty()){
                             System.out.println("List games first so you can choose a game.");
-                            break;
-                        }
+                            break;}
 
                         System.out.print("Game number: ");
                         int number;
@@ -204,42 +182,28 @@ public class ClientMain {
                             number = Integer.parseInt(scanner.nextLine().trim());
                         }catch (NumberFormatException e) {
                             System.out.println("Enter a number from the game list.");
-                            break;
-                        }
-
+                            break;}
                         if(number < 1 || number > games.size()){
                             System.out.println("That game number is not in the list.");
-                            break;
-                        }
-
+                            break;}
                         ServerFacade.GameInfo selectedGame = games.get(number - 1);
                         System.out.println("Observing " + selectedGame.gameName() + ".");
-
                         drawBoard(new ChessGame().getBoard(), false);
-                        break;
-                    }
-
+                        break;}
                     case "quit":
                         running = false;
                         break;
-
                     default:
                         System.out.println("Unknown command. Type help to see available commands.");
-                }
-            }
-
-        }
-        scanner.close();
-    }
+                }}}
+        scanner.close();}
     private static void drawBoard(ChessBoard board, boolean blackPerspective) {
         int row = blackPerspective ? 1 : 8;
         int rowEnd = blackPerspective ? 8 : 1;
         int rowStep = blackPerspective ? 1 : -1;
-
         int col = blackPerspective ? 8 : 1;
         int colEnd = blackPerspective ? 1 : 8;
         int colStep = blackPerspective ? -1 : 1;
-
         System.out.print("   ");
         for (int c = col; ; c += colStep) {
             System.out.printf(" %c ", (char) ('a' + c - 1));
