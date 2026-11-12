@@ -1,7 +1,6 @@
 package client;
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
@@ -148,7 +147,7 @@ public class ClientMain {
                         }
 
                         System.out.print("Color (WHITE or BLACK): ");
-                        String color = scanner.nextLine().trim().toUpperCase(Locale.ROOT);
+                        String color = scanner.nextLine().trim().toUpperCase();
                         if (!color.equals("WHITE") && !color.equals("BLACK")) {
                             System.out.println("Choose WHITE or BLACK.");
                             break;
@@ -207,7 +206,7 @@ public class ClientMain {
         System.out.print("   ");
         for (int c = col; ; c += colStep) {
             System.out.printf(" %c ", (char) ('a' + c - 1));
-            if (c == colEnd) break;
+            if (c == colEnd) {break;}
         }
         System.out.println();
 
@@ -223,17 +222,17 @@ public class ClientMain {
                 ChessPiece piece = board.getPiece(new ChessPosition(r, c));
                 System.out.print(background + pieceText(piece) + RESET_BG_COLOR);
 
-                if (c == colEnd) break;
+                if (c == colEnd){break;}
             }
 
             System.out.println(" " + r);
-            if (r == rowEnd) break;
+            if (r == rowEnd) {break;}
         }
 
         System.out.print("   ");
         for (int c = col; ; c += colStep) {
             System.out.printf(" %c ", (char) ('a' + c - 1));
-            if (c == colEnd) break;
+            if (c == colEnd) {break;}
         }
         System.out.println();
     }
@@ -243,7 +242,7 @@ public class ClientMain {
             return EMPTY;
         }
 
-        String symbol = switch (piece.getPieceType()) {
+        String symbol = switch(piece.getPieceType()){
             case KING -> piece.getTeamColor() == ChessGame.TeamColor.WHITE
                     ? WHITE_KING : BLACK_KING;
             case QUEEN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE
@@ -259,7 +258,7 @@ public class ClientMain {
         };
 
         String textColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE
-                ? SET_TEXT_COLOR_RED
+                ?  SET_TEXT_COLOR_RED
                 : SET_TEXT_COLOR_BLUE;
 
         return textColor + symbol + RESET_TEXT_COLOR;
