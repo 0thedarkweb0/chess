@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
-
+import static ui.EscapeSequences.*;
 
 import chess.*;
 import model.AuthData;
@@ -75,11 +75,11 @@ public class ClientMain {
                         System.out.println("Unknown command. Type help to see available commands.");
                 }
             }else{
-                System.out.println("Commands: help, logout, create, list, play, observe, quit");
+                System.out.println("Commands: help, logout, create game, list games, play game, observe, quit.");
 
                 switch (command) {
                     case "help":
-                        System.out.println("Commands: help, logout, create game, list games, play, observe, quit");
+                        System.out.println("Commands: help, logout, create game, list games, play game, observe, quit");
                         break;
 
                     case "logout":
@@ -179,6 +179,7 @@ public class ClientMain {
                                     color
                             );
                             System.out.println("Joined " + selectedGame.gameName() + " as " + color + ".");
+                            drawBoard(new ChessGame().getBoard(), color.equals("BLACK"));
                         } catch (IllegalStateException e) {
                             System.out.println(e.getMessage());
                         } catch (IOException e) {
@@ -202,4 +203,75 @@ public class ClientMain {
         }
         scanner.close();
     }
+    private static void drawBoard(ChessBoard board, boolean blackPerspective) {
+        int row = blackPerspective ? 1 : 8;
+        int rowEnd = blackPerspective ? 8 : 1;
+        int rowStep = blackPerspective ? 1 : -1;
+
+        int col = blackPerspective ? 8 : 1;
+        int colEnd = blackPerspective ? 1 : 8;
+        int colStep = blackPerspective ? -1 : 1;
+
+        System.out.print("   ");
+        for (int c = col; ; c += colStep) {
+            System.out.printf(" %c ", (char) ('a' + c - 1));
+            if (c == colEnd) break;
+        }
+        System.out.println();
+
+        for (int r = row; ; r += rowStep) {
+            System.out.print(r + " ");
+
+            for (int c = col; ; c += colStep) {
+                boolean lightSquare = (r + c) % 2 == 1;
+                String background = lightSquare
+                        ? SET_BG_COLOR_LIGHT_GREY
+                        : SET_BG_COLOR_DARK_GREEN;
+
+                ChessPiece piece = board.getPiece(new ChessPosition(r, c));
+                System.out.print(background + pieceText(piece) + RESET_BG_COLOR);
+
+                if (c == colEnd) break;
+            }
+
+            System.out.println(" " + r);
+            if (r == rowEnd) break;
+        }
+
+        System.out.print("   ");
+        for (int c = col; ; c += colStep) {
+            System.out.printf(" %c ", (char) ('a' + c - 1));
+            if (c == colEnd) break;
+        }
+        System.out.println();
+    }
+
+    private static String pieceText(ChessPiece piece) {
+        if (piece == null) {
+            return EMPTY;
+        }
+
+        String symbol = switch (piece.getPieceType()) {
+            case KING -> piece.getTeamColor() == ChessGame.TeamColor.WHITE
+                    ? WHITE_KING : BLACK_KING;
+            case QUEEN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE
+                    ? WHITE_QUEEN : BLACK_QUEEN;
+            case ROOK -> piece.getTeamColor() == ChessGame.TeamColor.WHITE
+                    ? WHITE_ROOK : BLACK_ROOK;
+            case BISHOP -> piece.getTeamColor() == ChessGame.TeamColor.WHITE
+                    ? WHITE_BISHOP : BLACK_BISHOP;
+            case KNIGHT -> piece.getTeamColor() == ChessGame.TeamColor.WHITE
+                    ? WHITE_KNIGHT : BLACK_KNIGHT;
+            case PAWN -> piece.getTeamColor() == ChessGame.TeamColor.WHITE
+                    ? WHITE_PAWN : BLACK_PAWN;
+        };
+
+        String textColor = piece.getTeamColor() == ChessGame.TeamColor.WHITE
+                ? SET_TEXT_COLOR_RED
+                : SET_TEXT_COLOR_BLUE;
+
+        return textColor + symbol + RESET_TEXT_COLOR;
+    }
+
 }
+
