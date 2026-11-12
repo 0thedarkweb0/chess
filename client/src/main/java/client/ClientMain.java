@@ -1,18 +1,18 @@
 package client;
+import java.io.IOException;
 import java.util.Scanner;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.Locale;
+
 
 import chess.*;
+import model.AuthData;
 
 public class ClientMain {
-    private static final HttpClient httpClient = HttpClient.newHttpClient();
     public static void main(String[] args) {
         System.out.println("Welcome to Chris's 240 chess. Type help to get started");
         Scanner scanner = new Scanner(System.in);
+        ServerFacade facade = new ServerFacade(8080);
+        AuthData currentUser = null;
+
 
         boolean running = true;
 
@@ -27,6 +27,50 @@ public class ClientMain {
                 case "quit":
                     running = false;
                     break;
+
+                case "login":
+                    System.out.print("Username: ");
+                    String username = scanner.nextLine();
+
+                    System.out.print("Password: ");
+                    String password = scanner.nextLine();
+
+                    try {
+                        currentUser = facade.login(username, password);
+                        System.out.println("Login successful. Welcome, " + currentUser.username() + ".");
+                    } catch (IllegalStateException e) {
+                        System.out.println(e.getMessage());
+                    } catch (IOException e) {
+                        System.out.println("Could not connect to the server.");
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        System.out.println("Login was interrupted.");
+                    }
+                    break;
+
+                case "register":
+                    System.out.print("Username: ");
+                    String newUsername = scanner.nextLine();
+
+                    System.out.print("Password: ");
+                    String newPassword = scanner.nextLine();
+
+                    System.out.print("Email: ");
+                    String email = scanner.nextLine();
+
+                    try {
+                        currentUser = facade.register(newUsername, newPassword, email);
+                        System.out.println("Registration successful. Welcome, " + currentUser.username() + ".");
+                    } catch (IllegalStateException e) {
+                        System.out.println(e.getMessage());
+                    } catch (IOException e) {
+                        System.out.println("Could not connect to the server.");
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        System.out.println("Registration was interrupted.");
+                    }
+                    break;
+
                 default:
                     System.out.println("Unknown command. Type help to see available commands.");
             }
