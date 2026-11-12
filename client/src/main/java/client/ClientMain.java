@@ -77,7 +77,7 @@ public class ClientMain {
 
                 switch (command) {
                     case "help":
-                        System.out.println("Choose a game action or logout.");
+                        System.out.println("Commands: help, logout, create, list, play, observe, quit");
                         break;
 
                     case "logout":
@@ -94,6 +94,22 @@ public class ClientMain {
                             System.out.println("Logout was interrupted.");
                         }
                         break;
+
+                    case "create":
+                        System.out.print("Game Name: ");
+                        String gameName = scanner.nextLine();
+
+                        try{
+                            facade.createGame(currentUser.authToken(), gameName);
+
+                        } catch (IllegalStateException e) {
+                            System.out.println(e.getMessage());
+                        } catch (IOException e) {
+                            System.out.println("Could not connect to the server.");
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            System.out.println("Logout was interrupted.");
+                        }
 
                     case "quit":
                         running = false;

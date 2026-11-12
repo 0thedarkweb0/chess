@@ -19,7 +19,8 @@ public class ServerFacade {
         this.httpClient = HttpClient.newHttpClient();
         this.gson = new Gson();
     }
-
+    private record CreateGameRequestBody(String gameName) {}
+    private record CreateGameResponse(int gameID) {}
     private record RegisterRequestBody(
             String username,
             String password,
@@ -98,6 +99,34 @@ public class ServerFacade {
             throw new IllegalStateException("Your session is no longer valid. Please log in again.");
         } else if (response.statusCode() != 200) {
             throw new IllegalStateException("The server could not complete logout.");
+        }
+    }
+
+    public int createGame(String authToken, String gameName)
+    throws IOException, InterruptedException{
+        var body = gson.toJson(new CreateGameRequestBody(gameName));
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + "/game"))
+                .header("Content-Type","application/json")
+                .header("authorization", authToken)
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
+        var response = httpClient.send(
+                request,
+                HttpResponse.BodyHandlers.ofString()
+        );
+
+        if(response.statusCode() == 400){
+            CreateGameResponse result =
+                    gson.fromJson(response.body(), CreateGameResponse.class);
+            return result.gameID();
+        } else if (response.statusCode() == 400){
+            throw new IllegalStateException("Enter a valid game name.");
+        } else if (response.statusCode() == 401){
+            throw new IllegalStateException("Your session is invalid. Please login again");
+        } else{
+            throw new IllegalStateException("The server could not create the game");
         }
     }
 
