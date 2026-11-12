@@ -16,6 +16,7 @@ public class ClientMain {
         AuthData currentUser = null;
         boolean running = true;
         List<ServerFacade.GameInfo> games = List.of();
+
         while (running) {
             System.out.print("> ");
             String command = scanner.nextLine().trim().toLowerCase();
@@ -180,14 +181,41 @@ public class ClientMain {
                             );
                             System.out.println("Joined " + selectedGame.gameName() + " as " + color + ".");
                             drawBoard(new ChessGame().getBoard(), color.equals("BLACK"));
-                        } catch (IllegalStateException e) {
+                        }catch (IllegalStateException e){
                             System.out.println(e.getMessage());
-                        } catch (IOException e) {
+                        }catch (IOException e){
                             System.out.println("Could not connect to the server.");
-                        } catch (InterruptedException e) {
+                        }catch (InterruptedException e){
                             Thread.currentThread().interrupt();
                             System.out.println("Joining the game was interrupted.");
                         }
+                        break;
+                    }
+
+                    case "observe": {
+                        if(games.isEmpty()){
+                            System.out.println("List games first so you can choose a game.");
+                            break;
+                        }
+
+                        System.out.print("Game number: ");
+                        int number;
+                        try{
+                            number = Integer.parseInt(scanner.nextLine().trim());
+                        }catch (NumberFormatException e) {
+                            System.out.println("Enter a number from the game list.");
+                            break;
+                        }
+
+                        if(number < 1 || number > games.size()){
+                            System.out.println("That game number is not in the list.");
+                            break;
+                        }
+
+                        ServerFacade.GameInfo selectedGame = games.get(number - 1);
+                        System.out.println("Observing " + selectedGame.gameName() + ".");
+
+                        drawBoard(new ChessGame().getBoard(), false);
                         break;
                     }
 
