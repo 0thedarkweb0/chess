@@ -26,6 +26,7 @@ public class ServerFacade {
             String email
     ) {}
     private record LoginRequestBody(String username, String password) {}
+
     public AuthData login(String username, String password)
             throws IOException, InterruptedException {
         var body = gson.toJson(new LoginRequestBody(username, password));
@@ -79,4 +80,26 @@ public class ServerFacade {
             throw new IllegalStateException("The server could not complete registration.");
         }
     }
+
+    public void logout(String authToken)
+            throws IOException, InterruptedException {
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + "/session"))
+                .header("authorization", authToken)
+                .DELETE()
+                .build();
+
+        var response = httpClient.send(
+                request,
+                HttpResponse.BodyHandlers.ofString()
+        );
+
+        if (response.statusCode() == 401) {
+            throw new IllegalStateException("Your session is no longer valid. Please log in again.");
+        } else if (response.statusCode() != 200) {
+            throw new IllegalStateException("The server could not complete logout.");
+        }
+    }
+
+
 }
