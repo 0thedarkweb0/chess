@@ -86,108 +86,16 @@ public class ClientMain {
                         }
                         break;
                     case "create game":
-                        System.out.print("Game Name: ");
-                        String gameName = scanner.nextLine();
-                        try{
-                            facade.createGame(currentUser.authToken(), gameName);
-                        } catch (IllegalStateException e) {
-                            System.out.println(e.getMessage());
-                        } catch (IOException e) {
-                            System.out.println("Could not connect to the server.");
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            System.out.println("Create games was interrupted.");
-                        }break;
+                        createGameHelp(games,scanner,currentUser,facade);
+                        break;
                     case "list games":
-                        System.out.print("Games: ");
-                        try{
-                           games = facade.listGame(currentUser.authToken());
-                           if(games.isEmpty()){
-                               System.out.println("There are no games.");
-                           }else{
-                               for (int i = 0; i < games.size(); i++) {
-                                   ServerFacade.GameInfo game = games.get(i);
-                                   String white = game.whiteUsername() == null
-                                           ? "open" : game.whiteUsername();
-                                   String black = game.blackUsername() == null
-                                           ? "open" : game.blackUsername();
-                                   System.out.printf(
-                                           "%d. %s (White: %s, Black: %s)%n",
-                                           i + 1, game.gameName(), white, black
-                                   );
-                               }
-                           }
-                        } catch (IllegalStateException e){
-                            System.out.println(e.getMessage());
-                        } catch (IOException e){
-                            System.out.println("Could not connect to the server");
-                        } catch (InterruptedException e){
-                            Thread.currentThread().interrupt();
-                            System.out.println("List games was interrupted");
-                        }break;
-
+                        listGameHelp(games, currentUser,facade);
+                        break;
                     case "play game": {
-                        if (games.isEmpty()) {
-                            System.out.println("List games first. There are no games to select.");
-                            break;
-                        }
-
-                        System.out.print("Game number: ");
-                        int number;
-                        try {
-                            number = Integer.parseInt(scanner.nextLine().trim());
-                        } catch (NumberFormatException e) {
-                            System.out.println("Enter a number from the game list.");
-                            break;
-                        }
-
-                        if (number < 1 || number > games.size()) {
-                            System.out.println("That game number is not in the list.");
-                            break;
-                        }
-
-                        System.out.print("Color (WHITE or BLACK): ");
-                        String color = scanner.nextLine().trim().toUpperCase();
-                        if (!color.equals("WHITE") && !color.equals("BLACK")) {
-                            System.out.println("Choose WHITE or BLACK.");
-                            break;
-                        }
-                        ServerFacade.GameInfo selectedGame = games.get(number - 1);
-                        try {
-                            facade.joinGame(
-                                    currentUser.authToken(),
-                                    selectedGame.gameID(),
-                                    color
-                            );
-                            System.out.println("Joined " + selectedGame.gameName() + " as " + color + ".");
-                            drawBoard(new ChessGame().getBoard(), color.equals("BLACK"));
-                        }catch (IllegalStateException e){
-                            System.out.println(e.getMessage());
-                        }catch (IOException e){
-                            System.out.println("Could not connect to the server.");
-                        }catch (InterruptedException e){
-                            Thread.currentThread().interrupt();
-                            System.out.println("Joining the game was interrupted.");
-                        }break;}
-
+                        playGameHelp(games,scanner,currentUser,facade);
+                        break;}
                     case "observe": {
-                        if(games.isEmpty()){
-                            System.out.println("List games first so you can choose a game.");
-                            break;}
-
-                        System.out.print("Game number: ");
-                        int number;
-                        try{
-                            number = Integer.parseInt(scanner.nextLine().trim());
-                        }catch (NumberFormatException e) {
-                            System.out.println("Enter a number from the game list.");
-                            break;}
-                        if(number < 1 || number > games.size()){
-                            System.out.println("That game number is not in the list.");
-                            break;}
-                        ServerFacade.GameInfo selectedGame = games.get(number - 1);
-                        System.out.println("Observing " + selectedGame.gameName() + ".");
-                        drawBoard(new ChessGame().getBoard(), false);
+                        observeHelp(games,scanner);
                         break;}
                     case "quit":
                         running = false;
@@ -236,7 +144,6 @@ public class ClientMain {
         }
         System.out.println();
     }
-
     private static String pieceText(ChessPiece piece) {
         if (piece == null) {
             return EMPTY;
@@ -263,6 +170,113 @@ public class ClientMain {
 
         return textColor + symbol + RESET_TEXT_COLOR;
     }
+    private static void observeHelp(List<ServerFacade.GameInfo> games, Scanner scanner) {
+        if (games.isEmpty()) {
+            System.out.println("List games first so you can choose a game.");
+            return;
+        }
 
+        System.out.print("Game number: ");
+        int number;
+        try {
+            number = Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Enter a number from the game list.");
+            return;
+        }
+        if (number < 1 || number > games.size()) {
+            System.out.println("That game number is not in the list.");
+            return;
+        }
+        ServerFacade.GameInfo selectedGame = games.get(number - 1);
+        System.out.println("Observing " + selectedGame.gameName() + ".");
+        drawBoard(new ChessGame().getBoard(), false);
+    }
+    private static void playGameHelp(List<ServerFacade.GameInfo> games, Scanner scanner, AuthData currentUser, ServerFacade facade){
+        if (games.isEmpty()) {
+            System.out.println("List games first. There are no games to select.");
+            return;
+        }
+
+        System.out.print("Game number: ");
+        int number;
+        try {
+            number = Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Enter a number from the game list.");
+            return;
+        }
+
+        if (number < 1 || number > games.size()) {
+            System.out.println("That game number is not in the list.");
+            return;
+        }
+
+        System.out.print("Color (WHITE or BLACK): ");
+        String color = scanner.nextLine().trim().toUpperCase();
+        if (!color.equals("WHITE") && !color.equals("BLACK")) {
+            System.out.println("Choose WHITE or BLACK.");
+            return;
+        }
+        ServerFacade.GameInfo selectedGame = games.get(number - 1);
+        try {
+            facade.joinGame(
+                    currentUser.authToken(),
+                    selectedGame.gameID(),
+                    color
+            );
+            System.out.println("Joined " + selectedGame.gameName() + " as " + color + ".");
+            drawBoard(new ChessGame().getBoard(), color.equals("BLACK"));
+        }catch (IllegalStateException e){
+            System.out.println(e.getMessage());
+        }catch (IOException e){
+            System.out.println("Could not connect to the server.");
+        }catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+            System.out.println("Joining the game was interrupted.");
+        }
+    }
+    private static void listGameHelp(List<ServerFacade.GameInfo> games, AuthData currentUser, ServerFacade facade){
+        System.out.print("Games: ");
+        try{
+            games = facade.listGame(currentUser.authToken());
+            if(games.isEmpty()){
+                System.out.println("There are no games.");
+            }else{
+                for (int i = 0; i < games.size(); i++) {
+                    ServerFacade.GameInfo game = games.get(i);
+                    String white = game.whiteUsername() == null
+                            ? "open" : game.whiteUsername();
+                    String black = game.blackUsername() == null
+                            ? "open" : game.blackUsername();
+                    System.out.printf(
+                            "%d. %s (White: %s, Black: %s)%n",
+                            i + 1, game.gameName(), white, black
+                    );
+                }
+            }
+        } catch (IllegalStateException e){
+            System.out.println(e.getMessage());
+        } catch (IOException e){
+            System.out.println("Could not connect to the server");
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+            System.out.println("List games was interrupted");
+        }
+    }
+    private static void createGameHelp(List<ServerFacade.GameInfo> games, Scanner scanner,AuthData currentUser, ServerFacade facade){
+        System.out.print("Game Name: ");
+        String gameName = scanner.nextLine();
+        try{
+            facade.createGame(currentUser.authToken(), gameName);
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Could not connect to the server.");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Create games was interrupted.");
+        }
+    }
 }
 
